@@ -33,7 +33,8 @@
       <a href="/productos">Productos</a>
       @auth
         @if(auth()->user()->isAdmin())
-          <a href="{{ route('admin.productos.create') }}">Admin</a>
+          <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+          <a href="{{ route('admin.productos.create') }}">Agregar producto</a>
         @endif
         <form action="{{ route('logout') }}" method="POST" style="display:inline;">
           @csrf
