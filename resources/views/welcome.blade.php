@@ -55,7 +55,7 @@
         </div>
         <div class="space"></div>
         <strong>{{ $p->nombre }}</strong>
-        <div>S/ {{ number_format($p->precio, 2) }}</div>
+        <div>COP $ {{ number_format($p->precio, 0, ',', '.') }}</div>
         <div style="font-size:13px; color:#6b7280;">Stock: {{ $p->stock }}</div>
         <div class="space"></div>
         <a class="btn" href="{{ route('productos.show', $p) }}">Ver</a>

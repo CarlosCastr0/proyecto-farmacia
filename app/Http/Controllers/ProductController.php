@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -12,7 +13,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $products = Product::orderByDesc('id')->paginate(12);
+        return view('products.index', compact('products'));
     }
 
     /**
@@ -20,7 +22,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.products.create');
     }
 
     /**
@@ -28,7 +30,22 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'nombre' => ['required', 'string', 'max:255'],
+            'descripcion' => ['nullable', 'string'],
+            'precio' => ['required', 'numeric', 'min:0'],
+            'stock' => ['required', 'integer', 'min:0'],
+            'imagen' => ['nullable', 'image', 'max:2048'],
+        ]);
+
+        if ($request->hasFile('imagen')) {
+            $data['imagen'] = $request->file('imagen')->store('products', 'public');
+        }
+
+        $product = Product::create($data);
+
+        return redirect()->route('productos.show', $product)
+            ->with('status', 'Producto creado correctamente.');
     }
 
     /**
@@ -36,7 +53,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        return view('products.show', compact('product'));
     }
 
     /**
@@ -44,7 +61,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        return view('admin.products.edit', compact('product'));
     }
 
     /**
@@ -52,7 +69,25 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $data = $request->validate([
+            'nombre' => ['required', 'string', 'max:255'],
+            'descripcion' => ['nullable', 'string'],
+            'precio' => ['required', 'numeric', 'min:0'],
+            'stock' => ['required', 'integer', 'min:0'],
+            'imagen' => ['nullable', 'image', 'max:2048'],
+        ]);
+
+        if ($request->hasFile('imagen')) {
+            if ($product->imagen) {
+                Storage::disk('public')->delete($product->imagen);
+            }
+            $data['imagen'] = $request->file('imagen')->store('products', 'public');
+        }
+
+        $product->update($data);
+
+        return redirect()->route('productos.show', $product)
+            ->with('status', 'Producto actualizado.');
     }
 
     /**
@@ -60,6 +95,12 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        if ($product->imagen) {
+            Storage::disk('public')->delete($product->imagen);
+        }
+        $product->delete();
+
+        return redirect()->route('productos.index')
+            ->with('status', 'Producto eliminado.');
     }
 }

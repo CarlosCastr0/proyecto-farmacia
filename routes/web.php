@@ -35,3 +35,5 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('productos', ProductController::class)->except(['index', 'show']);
 });
+// Enlaza {producto} al modelo Product para rutas resource en español
+Route::model('producto', Product::class);
