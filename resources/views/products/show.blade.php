@@ -26,6 +26,15 @@
     <p style="white-space:pre-line;">{{ $product->descripcion }}</p>
 
     @auth
+      <div class="space"></div>
+      <form method="POST" action="{{ route('carrito.store') }}" class="row" style="gap:8px; align-items:center;">
+        @csrf
+        <input type="hidden" name="product_id" value="{{ $product->id }}">
+        <label for="cantidad" style="margin:0;">Cantidad</label>
+        <input id="cantidad" type="number" name="cantidad" value="1" min="1" max="{{ (int)$product->stock }}" style="width:90px;">
+        <button class="btn" type="submit">Agregar al carrito</button>
+      </form>
+
       @if(auth()->user()->isAdmin())
         <div class="space"></div>
         <div class="row" style="gap:8px;">

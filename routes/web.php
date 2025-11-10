@@ -29,6 +29,7 @@ Route::resource('productos', ProductController::class)->only(['index', 'show']);
 Route::middleware(['auth'])->group(function () {
     Route::resource('carrito', CarritoController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('ventas', VentaController::class)->only(['index', 'show', 'store']);
+    Route::get('ventas/{venta}/recibo', [VentaController::class, 'recibo'])->name('ventas.recibo');
 });
 
 // Rutas de administración

@@ -1,0 +1,70 @@
+@startuml
+title Casos de Uso - Proyecto Farmacia
+
+left to right direction
+skinparam shadowing false
+skinparam PackageBorderColor #111
+skinparam ArrowColor #2563eb
+skinparam UsecaseBorderColor #111
+skinparam UsecaseBackgroundColor #ffffff
+
+actor Usuario
+actor Administrador
+
+package "Autenticación" {
+  usecase UC1 as "Registrarse"
+  usecase UC2 as "Iniciar sesión"
+  usecase UC3 as "Cerrar sesión"
+}
+
+package "Catálogo y Carrito" {
+  usecase UC4 as "Ver catálogo"
+  usecase UC5 as "Ver detalle de producto"
+  usecase UC6 as "Agregar al carrito"
+  usecase UC7 as "Ver/editar carrito"
+}
+
+package "Compra" {
+  usecase UC8 as "Seleccionar método de pago"
+  usecase UC9 as "Realizar compra (Checkout)"
+  usecase UC10 as "Descargar recibo (PDF/HTML)"
+  usecase UC11 as "Ver mis compras"
+}
+
+package "Administración" {
+  usecase UC12 as "CRUD de productos"
+  usecase UC13 as "Dashboard de ventas"
+}
+
+Usuario --> UC1
+Usuario --> UC2
+Usuario --> UC3
+Usuario --> UC4
+Usuario --> UC5
+Usuario --> UC6
+Usuario --> UC7
+Usuario --> UC8
+Usuario --> UC9
+Usuario --> UC10
+Usuario --> UC11
+
+Administrador --> UC2
+Administrador --> UC3
+Administrador --> UC12
+Administrador --> UC13
+
+UC9 .> UC8 : <<include>>
+UC10 .> UC11 : <<extend>>
+
+note right of UC9
+  Valida stock,
+  crea Venta y Detalles,
+  descuenta stock y vacía carrito.
+end note
+
+note bottom of UC12
+  Solo rol "admin" (middleware IsAdmin)
+end note
+
+@enduml
+

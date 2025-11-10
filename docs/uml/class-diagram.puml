@@ -1,0 +1,103 @@
+@startuml
+title Diagrama de Clases - Proyecto Farmacia
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam shadowing false
+skinparam arrowColor #2563eb
+skinparam classBorderColor #111
+skinparam classBackgroundColor #ffffff
+skinparam classFontColor #111
+
+package "Dominio" {
+  class User {
+    +id: bigIncrements
+    +name: string
+    +email: string
+    +email_verified_at: datetime
+    +password: string
+    +role: string = "user"
+    ..Métodos..
+    +ventas(): HasMany
+    +carritos(): HasMany
+    +isAdmin(): bool
+  }
+
+  class Product {
+    +id: bigIncrements
+    +nombre: string
+    +descripcion: text?
+    +precio: decimal(10,2)
+    +stock: int
+    +imagen: string?
+    ..Relaciones..
+    +carritos(): HasMany
+    +detalleVentas(): HasMany
+  }
+
+  class Carrito {
+    +id: bigIncrements
+    +user_id: foreignId
+    +product_id: foreignId
+    +cantidad: int
+    ..Relaciones..
+    +user(): BelongsTo
+    +product(): BelongsTo
+  }
+
+  class Venta {
+    +id: bigIncrements
+    +user_id: foreignId
+    +total: decimal(10,2)
+    +metodo_pago: string
+    +estado: string
+    +recibo_pdf: string?
+    +created_at: timestamp
+    ..Relaciones..
+    +user(): BelongsTo
+    +detalles(): HasMany
+  }
+
+  class DetalleVenta {
+    +id: bigIncrements
+    +venta_id: foreignId
+    +product_id: foreignId
+    +cantidad: int
+    +subtotal: decimal(10,2)
+    ..Relaciones..
+    +venta(): BelongsTo
+    +product(): BelongsTo
+  }
+}
+
+package "HTTP" {
+  class ProductController
+  class CarritoController
+  class VentaController
+  class AuthController
+  class DashboardController
+}
+
+package "Middleware" {
+  class IsAdmin
+}
+
+User "1" -- "*" Venta : realiza >
+Venta "1" -- "*" DetalleVenta : contiene >
+Product "1" -- "*" DetalleVenta : < participa
+User "1" -- "*" Carrito : < tiene
+Product "1" -- "*" Carrito : está en >
+
+ProductController ..> Product : usa
+CarritoController ..> Carrito : usa
+CarritoController ..> Product : valida stock
+VentaController ..> Venta : crea
+VentaController ..> DetalleVenta : crea
+VentaController ..> Carrito : vacía
+AuthController ..> User : autentica
+IsAdmin ..> User : comprueba rol
+DashboardController ..> Venta : agrega datos
+DashboardController ..> DetalleVenta : agrega datos
+
+@enduml
+
