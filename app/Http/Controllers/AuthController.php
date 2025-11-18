@@ -60,7 +60,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'password' => Hash::make($data['password']), //bcrypt:bcrypt es un algoritmo de hashing de contraseñas diseñado específicamente para proteger contraseñas almacenadas en bases de datos.
         ]);
 
         Auth::login($user);
@@ -69,4 +69,3 @@ class AuthController extends Controller
         return redirect('/');
     }
 }
-
